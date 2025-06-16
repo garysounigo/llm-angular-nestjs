@@ -27,7 +27,7 @@ export class ChatService {
       message:
         'If the capital of California is what you seek, Sacramento is where you ought to peek.',
     },
-  ],
+  ];
 
   constructor() {
     //const genAI = new GoogleGenerativeAI(process.env.API_KEY);
@@ -62,8 +62,8 @@ export class ChatService {
     const { agent, message } = chatContent;
     const role = agent == 'user' ? agent : 'user';  
     this.history.push({role, message});
-    
-    const response = await ollama_client.chat({
+     console.log(this.history) 
+    const response = await this.ollama_client.chat({
       model: "llama3.2:1b",
       messages: this.history,
       stream: false
@@ -71,7 +71,7 @@ export class ChatService {
 
     return {
       message: response.message.content,
-      role: 'assistant'
+      role: 'assistant',
       agent: 'chatbot'
     }
 
