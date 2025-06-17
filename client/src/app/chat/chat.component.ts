@@ -31,12 +31,16 @@ import { Message } from 'ollama/browser'
 })
 export class ChatComponent {
 
+  inputContent: string = '';
   messages: Message[] = [];
 
   constructor(private ollamaService: ollamaService) {}
 
-  sendMessage(message: Message): void {
-    const chatMessage: Message = message;
+  sendMessage(content: string): void {
+    const chatMessage: Message = {
+      role: 'user',
+      content
+    };
 
     this.messages.push(chatMessage);
     
