@@ -37,17 +37,27 @@ export class ChatComponent {
   inputContent: string = '';
   messages: Message[] = [];
 
+  loading: boolean = false;
+
   constructor(private ollamaService: ollamaService) {}
 
   sendMessage(content: string): void {
+    this.loading = true;
     const chatMessage: Message = {
       role: 'user',
       content
     };
 
     this.messages.push(chatMessage);
-    
-    this.ollamaService.chat(this.messages).pipe()
+     
+    //reset inputContent
+    this.inputContent = '';
+
+    //call ollama chat  
+    this.ollamaService.chat(this.messages).pipe(
+      finalize(() => {
+        this.loading = false;
+      }))
       .subscribe((message: Message) => {
         this.messages.push(message);
       });
