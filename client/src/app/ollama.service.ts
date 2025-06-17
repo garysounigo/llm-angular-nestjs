@@ -11,8 +11,8 @@ import { Message } from 'ollama/browser'
 export class ollamaService {
   constructor(private httpClient: HttpClient) { }
 
-  chat(chatMessage: Message): Observable<Message> {
-    return this.httpClient.post<Message>('http://localhost:3000/api/chat', chatMessage);
+  chat(chatMessages: Message[]): Observable<Message> {
+    return this.httpClient.post<Message[]>('http://localhost:3000/api/chat', chatMessages);
   }
 
   
