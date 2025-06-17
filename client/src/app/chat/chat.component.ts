@@ -7,10 +7,11 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 
-import { GeminiService } from '../gemini.service';
+import { ollamaService } from '../ollamaService.service';
 import { LineBreakPipe } from '../line-break.pipe';
 import { finalize } from 'rxjs';
-import { ClientChatContent } from '../client-chat-content';
+
+import { Message } from 'ollama/browser'
 
 
 @Component({
@@ -29,40 +30,19 @@ import { ClientChatContent } from '../client-chat-content';
   styleUrls: ['./chat.component.scss']
 })
 export class ChatComponent {
-  message = '';
 
-  contents: ClientChatContent[] = [];
+  messages: Message[] = [];
 
-  constructor(private geminiService: GeminiService) {}
+  constructor(private ollamaService: ollamaService) {}
 
-  sendMessage(message: string): void {
-    const chatContent: ClientChatContent = {
-      agent: 'user',
-      message,
-    };
+  sendMessage(message: Message): void {
+    const chatMessage: Message = message;
 
-    this.contents.push(chatContent);
-    this.contents.push({
-      agent: 'chatbot',
-      message: '...',
-      loading: true,
-    });
+    this.messages.push(chatMessage);
     
-    this.message = '';
-    this.geminiService
-      .chat(chatContent)
-      .pipe(
-        finalize(() => {
-          const loadingMessageIndex = this.contents.findIndex(
-            (content) => content.loading
-          );
-          if (loadingMessageIndex !== -1) {
-            this.contents.splice(loadingMessageIndex, 1);
-          }
-        })
-      )
-      .subscribe((content) => {
-        this.contents.push(content);
+    this.ollamaService.chat(this.messages).pipe()
+      .subscribe((message) => {
+        this.messages.push(message);
       });
   }
 
