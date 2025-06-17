@@ -10,15 +10,15 @@ import { Ollama, Message } from 'ollama'
 
 @Controller()
 export class AppController {
-  
+
   ollama_url: string = "http://localhost:11434";
   ollama_client: any = new Ollama({'host': this.ollama_url });
   
   constructor(private readonly chatService: ChatService) {  }
 
   @Post('chat')
-  chat(@Body() chatMessage: Message) {
-    return this.chatService.chat(chatMessage, this.ollama_client);
+  chat(@Body() chatMessages: Message[]) {
+    return this.chatService.chat(chatMessages, this.ollama_client);
   }
   
   // @Post('vision')
