@@ -12,14 +12,5 @@ export const appRoutes: Route[] = [
       import('./chat/chat.component').then((mod) => mod.ChatComponent),
     providers: [],
   },
-  {
-    path: 'text',
-    loadComponent: () =>
-      import('./text/text.component').then((mod) => mod.TextComponent),
-  },
-  {
-    path: 'vision',
-    loadComponent: () =>
-      import('./vision/vision.component').then((mod) => mod.VisionComponent),
-  },
+
 ];
