@@ -37,18 +37,26 @@ export class ChatComponent {
   inputContent: string = '';
   messages: Message[] = [];
 
-  loading: boolean = false;
+  loading: boolean[] = [false,false];
+  loading_index = 1;
 
   constructor(private ollamaService: ollamaService) {}
 
   sendMessage(content: string): void {
-    this.loading = true;
+    this.loading[this.loading_index] = true;
     const chatMessage: Message = {
       role: 'user',
       content
     };
 
-    this.messages.push(chatMessage);
+    //stock message that we will pass to the chat 
+    var messages = this.messages.push(chatMessage);
+
+    //add an empty message: for mimicking the server start to responding
+    this.messages.push({
+      role: 'assistant',
+      content: ''
+    })
      
     //reset inputContent
     this.inputContent = '';
@@ -56,10 +64,15 @@ export class ChatComponent {
     //call ollama chat  
     this.ollamaService.chat(this.messages).pipe(
       finalize(() => {
-        this.loading = false;
+        this.loading[this.loading_index] = false;
+        this.loading.push(false);
+        this.loading_index += 2
       }))
       .subscribe((message: Message) => {
-        this.messages.push(message);
+        //this.messages.push(message);
+        //dont push the reponse, but replace it at the place of the empty message; so the last elements of message
+        this.messages.splice(-1,1,message); //remplace a partir de -1, 1 valeur, que l'on remplace par message
+
       });
   }
 

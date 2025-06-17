@@ -6,7 +6,7 @@
     </p>
   </div>
   <div
-    *ngFor="let message of messages"
+    *ngFor="let message of messages; index as i"
     class="chat-message"
     [ngClass]="message.role"
   >
@@ -14,8 +14,8 @@
     <div class="message-details">
       <p
         class="message-content"
-        [ngClass]="{ loading: loading }"
-        [innerHTML]="loading ? '...' : message.content | lineBreak"
+        [ngClass]="{ loading: loading[i] }"
+        [innerHTML]="loading[i] ? '...' : message.content | lineBreak"
       ></p>
     </div>
   </div>
