@@ -7,12 +7,15 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 
-import { ollamaService } from '../ollamaService.service';
+import { ollamaService } from '../ollama.service';
 import { LineBreakPipe } from '../line-break.pipe';
 import { finalize } from 'rxjs';
 
-import { Message } from 'ollama/browser'
-
+//import { Message } from 'ollama/browser'
+interface Message{
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+}
 
 @Component({
   selector: 'corp-chat',
@@ -45,7 +48,7 @@ export class ChatComponent {
     this.messages.push(chatMessage);
     
     this.ollamaService.chat(this.messages).pipe()
-      .subscribe((message) => {
+      .subscribe((message: Message) => {
         this.messages.push(message);
       });
   }
