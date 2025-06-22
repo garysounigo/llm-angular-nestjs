@@ -1,21 +1,21 @@
 <div class="chat-container">
-  <div class="message-container" *ngIf="contents.length === 0">
+  <div class="message-container" *ngIf="messages.length === 0">
     <p class="message">
-      Welcome to your Gemini ChatBot App <br />
+      Welcome to your Ollama App <br />
       Write a text to start.
     </p>
   </div>
   <div
-    *ngFor="let content of contents"
+    *ngFor="let message of messages; index as i"
     class="chat-message"
-    [ngClass]="content.agent"
+    [ngClass]="message.role"
   >
-    <img [src]="'assets/avatar-' + content.agent + '.png'" class="avatar" />
+    <img [src]="'assets/avatar-' + message.role + '.png'" class="avatar" />
     <div class="message-details">
       <p
         class="message-content"
-        [ngClass]="{ loading: content.loading }"
-        [innerHTML]="content.message | lineBreak"
+        [ngClass]="{ loading: loading[i] }"
+        [innerHTML]="loading[i] ? '...' : message.content | lineBreak"
       ></p>
     </div>
   </div>
@@ -27,11 +27,11 @@
       placeholder="Send a message"
       matInput
       #inputMessage
-      [(ngModel)]="message"
-      (keyup.enter)="sendMessage(message)"
+      [(ngModel)]="inputContent"
+      (keyup.enter)="sendMessage(inputContent)"
     />
   </mat-form-field>
-  <button mat-icon-button color="primary" (click)="sendMessage(message)">
+  <button mat-icon-button color="primary" (click)="sendMessage(inputContent)">
     <mat-icon>send</mat-icon>
   </button>
 </div>

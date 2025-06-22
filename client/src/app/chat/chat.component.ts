@@ -7,11 +7,15 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 
-import { GeminiService } from '../gemini.service';
+import { ollamaService } from '../ollama.service';
 import { LineBreakPipe } from '../line-break.pipe';
 import { finalize } from 'rxjs';
-import { ClientChatContent } from '../client-chat-content';
 
+//import { Message } from 'ollama/browser'
+interface Message{
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+}
 
 @Component({
   selector: 'corp-chat',
@@ -29,40 +33,46 @@ import { ClientChatContent } from '../client-chat-content';
   styleUrls: ['./chat.component.scss']
 })
 export class ChatComponent {
-  message = '';
 
-  contents: ClientChatContent[] = [];
+  inputContent: string = '';
+  messages: Message[] = [];
 
-  constructor(private geminiService: GeminiService) {}
+  loading: boolean[] = [false,false];
+  loading_index = 1;
 
-  sendMessage(message: string): void {
-    const chatContent: ClientChatContent = {
-      agent: 'user',
-      message,
+  constructor(private ollamaService: ollamaService) {}
+
+  sendMessage(content: string): void {
+    this.loading[this.loading_index] = true;
+    const chatMessage: Message = {
+      role: 'user',
+      content
     };
 
-    this.contents.push(chatContent);
-    this.contents.push({
-      agent: 'chatbot',
-      message: '...',
-      loading: true,
-    });
-    
-    this.message = '';
-    this.geminiService
-      .chat(chatContent)
-      .pipe(
-        finalize(() => {
-          const loadingMessageIndex = this.contents.findIndex(
-            (content) => content.loading
-          );
-          if (loadingMessageIndex !== -1) {
-            this.contents.splice(loadingMessageIndex, 1);
-          }
-        })
-      )
-      .subscribe((content) => {
-        this.contents.push(content);
+    //stock message that we will pass to the chat 
+    var messages = this.messages.push(chatMessage);
+
+    //add an empty message: for mimicking the server start to responding
+    this.messages.push({
+      role: 'assistant',
+      content: ''
+    })
+     
+    //reset inputContent
+    this.inputContent = '';
+
+    //call ollama chat  
+    this.ollamaService.chat(this.messages).pipe(
+      finalize(() => {
+        this.loading[this.loading_index] = false;
+        this.loading.push(false);
+        this.loading_index += 2
+      }))
+      .subscribe((message: Message) => {
+        //this.messages.push(message);
+        //dont push the reponse, but replace it at the place of the empty message; so the last elements of message
+        this.messages.splice(-1,1,message); //remplace a partir de -1, 1 valeur, que l'on remplace par message
+
       });
   }
 

@@ -3,31 +3,27 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
 import Multer from 'multer';
 
-import { ChatContent } from 'data-model';
+
 import { ChatService } from './chat.service';
-import { TextService } from './text.service';
-import { VisionService } from './vision.service';
+
+import { Ollama, Message } from 'ollama'
 
 @Controller()
 export class AppController {
+
+  ollama_url: string = "http://localhost:11434";
+  ollama_client: any = new Ollama({'host': this.ollama_url });
   
-  constructor(private readonly chatService: ChatService, 
-              private readonly textService: TextService,
-              private readonly visionService: VisionService) {}
+  constructor(private readonly chatService: ChatService) {  }
 
   @Post('chat')
-  chat(@Body() chatContent: ChatContent) {
-    return this.chatService.chat(chatContent);
+  chat(@Body() chatMessages: Message[]) {
+    return this.chatService.chat(chatMessages, this.ollama_client);
   }
   
-  @Post('text')
-  text(@Body() chatContent: ChatContent) {
-    return this.textService.generateText(chatContent.message);
-  }
-
-  @Post('vision')
-  @UseInterceptors(FileInterceptor('file'))
-  uploadFile(@UploadedFile() file: Express.Multer.File, @Body() body: {message: string}) {
-    return this.visionService.vision(body.message, file);
-  }
+  // @Post('vision')
+  // @UseInterceptors(FileInterceptor('file'))
+  // uploadFile(@UploadedFile() file: Express.Multer.File, @Body() body: {message: string}) {
+  //   return this.visionService.vision(body.message, file);
+  // }
 }
