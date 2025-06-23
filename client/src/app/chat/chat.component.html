@@ -1,37 +1,28 @@
-<div class="chat-container">
-  <div class="message-container" *ngIf="messages.length === 0">
-    <p class="message">
-      Welcome to your Ollama App <br />
-      Write a text to start.
-    </p>
-  </div>
-  <div
-    *ngFor="let message of messages; index as i"
-    class="chat-message"
-    [ngClass]="message.role"
-  >
-    <img [src]="'assets/avatar-' + message.role + '.png'" class="avatar" />
-    <div class="message-details">
-      <p
-        class="message-content"
-        [ngClass]="{ loading: loading[i] }"
-        [innerHTML]="loading[i] ? '...' : message.content | lineBreak"
-      ></p>
-    </div>
-  </div>
-</div>
+<div class="chat-wrapper">
+  <div class="chat-messages">
+    <ng-container *ngFor="let chat of chats">
+      <!-- User message -->
+      <div class="message user" *ngIf="chat.submitted">
+        <div class="bubble user-bubble">
+          {{ chat.input }}
+        </div>
+      </div>
 
-<div class="chat-footer-container">
-  <mat-form-field class="chat-input">
-    <input
-      placeholder="Send a message"
-      matInput
-      #inputMessage
-      [(ngModel)]="inputContent"
-      (keyup.enter)="sendMessage(inputContent)"
-    />
-  </mat-form-field>
-  <button mat-icon-button color="primary" (click)="sendMessage(inputContent)">
-    <mat-icon>send</mat-icon>
-  </button>
+      <!-- Bot message -->
+      <div class="message bot" *ngIf="chat.response">
+        <div class="bubble bot-bubble" [innerHTML]="chat.response"></div>
+      </div>
+
+      <!-- Active input -->
+      <div class="message input" *ngIf="!chat.submitted">
+        <div class="input-wrapper">
+          <input type="text" [(ngModel)]="chat.input" (keyup.enter)="send(chat)" placeholder="Type your message..." />
+          <button (click)="send(chat)">➤</button>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+
+  <!-- Fixed input bar if you want it detached -->
+  <!-- <div class="fixed-input-bar"> ... </div> -->
 </div>
