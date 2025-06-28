@@ -11,7 +11,6 @@ export class ChatService {
 
         this.sse.onmessage = (event) => {
             if (event.data === '[DONE]') {
-                // your protocol to mark end of stream
                 this.sse?.close();
             } else {
                 onMessage(event.data);
